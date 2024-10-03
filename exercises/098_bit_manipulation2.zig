@@ -60,5 +60,9 @@ fn isPangram(str: []const u8) bool {
     // and if so, we know the given string is a pangram
     //
     // but what do we have to compare?
-    return bits == 0x..???;
+    var mybits: u32 = 1;
+    mybits <<= 26;
+    mybits -= 1;
+
+    return bits == mybits;
 }

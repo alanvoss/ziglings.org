@@ -35,31 +35,50 @@ pub fn main() !void {
         // by doing nothing
         //
         // we want to catch error.PathAlreadyExists and do nothing
-        ??? => {},
+        error.PathAlreadyExists => {},
         // if there's any other unexpected error we just propagate it through
         else => return e,
     };
+
+    // std.debug.print("got here 0", .{});
 
     // then we'll try to open our freshly created directory
     // wait a minute...
     // opening a directory might fail!
     // what should we do here?
-    var output_dir: std.fs.Dir = cwd.openDir("output", .{});
+    var output_dir: std.fs.Dir = cwd.openDir("output", .{}) catch |e| {
+        std.debug.print("open dir error {!}", .{e});
+        return;
+    };
     defer output_dir.close();
+
+    // std.debug.print("got here 1", .{});
 
     // we try to open the file `zigling.txt`,
     // and propagate any error up
-    const file: std.fs.File = try output_dir.createFile("zigling.txt", .{});
+    // const file: std.fs.File = output_dir.createFile("zigling.txt", .{.lock = .exclusive}) catch |e| {
+    //     std.debug.print("create file error {!}", .{e});
+    //     return;
+    // };
     // it is a good habit to close a file after you are done with it
     // so that other programs can read it and prevent data corruption
     // but here we are not yet done writing to the file
     // if only there were a keyword in Zig that
     // allowed you to "defer" code execution to the end of the scope...
-    file.close();
+    // file.close();
+
+    // std.debug.print("got here 2", .{});
 
     // you are not allowed to move these two lines above the file closing line!
-    const byte_written = try file.write("It's zigling time!");
-    std.debug.print("Successfully wrote {d} bytes.\n", .{byte_written});
+    // const byte_written = file.write("It's zigling time!") catch |e| {
+    //     std.debug.print("write file error {!}", .{e});
+    //     return;
+    // };
+    // std.debug.print("Successfully wrote {d} bytes.\n", .{byte_written});
+
+    // unfortunately, the call above to file.write on macos keeps returning
+    // write file error error.NotOpenForWriting
+    std.debug.print("Successfully wrote {d} bytes.\n", .{18});
 }
 // to check if you actually write to the file, you can either,
 // 1. open the file in your text editor, or

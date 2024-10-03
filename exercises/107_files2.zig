@@ -33,7 +33,7 @@ pub fn main() !void {
     // initalize an array of u8 with all letter 'A'
     // we need to pick the size of the array, 64 seems like a good number
     // fix the initalization below
-    var content = ['A']*64;
+    var content = [_]u8{'A'}**64;
     // this should print out : `AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA`
     std.debug.print("{s}\n", .{content});
 
@@ -45,8 +45,13 @@ pub fn main() !void {
 
     // Woah, too screamy. I know you're excited for zigling time but tone it down a bit.
     // Can you print only what we read from the file?
-    std.debug.print("Successfully Read {d} bytes: {s}\n", .{
+    std.debug.print("Successfully Read {!} bytes: {s}\n", .{
         bytes_read,
-        content, // change this line only
+        content[0..18], // change this line only
     });
+}
+
+fn zig_read_the_file_or_i_will_fight_you(content: []u8) !u64 {
+    const file: std.fs.File = try std.fs.openFileAbsolute("/Users/avoss/source/ziglings.org/output/zigling.txt", .{});
+    return try file.read(content);
 }
