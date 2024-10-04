@@ -52,33 +52,25 @@ pub fn main() !void {
     };
     defer output_dir.close();
 
-    // std.debug.print("got here 1", .{});
-
     // we try to open the file `zigling.txt`,
     // and propagate any error up
-    // const file: std.fs.File = output_dir.createFile("zigling.txt", .{.lock = .exclusive}) catch |e| {
-    //     std.debug.print("create file error {!}", .{e});
-    //     return;
-    // };
+    const file: std.fs.File = output_dir.createFile("zigling.txt", .{.lock = .exclusive}) catch |e| {
+        std.debug.print("create file error {!}", .{e});
+        return;
+    };
     // it is a good habit to close a file after you are done with it
     // so that other programs can read it and prevent data corruption
     // but here we are not yet done writing to the file
     // if only there were a keyword in Zig that
     // allowed you to "defer" code execution to the end of the scope...
-    // file.close();
-
-    // std.debug.print("got here 2", .{});
+    defer file.close();
 
     // you are not allowed to move these two lines above the file closing line!
-    // const byte_written = file.write("It's zigling time!") catch |e| {
-    //     std.debug.print("write file error {!}", .{e});
-    //     return;
-    // };
-    // std.debug.print("Successfully wrote {d} bytes.\n", .{byte_written});
-
-    // unfortunately, the call above to file.write on macos keeps returning
-    // write file error error.NotOpenForWriting
-    std.debug.print("Successfully wrote {d} bytes.\n", .{18});
+    const byte_written = file.write("It's zigling time!") catch |e| {
+        std.debug.print("write file error {!}", .{e});
+        return;
+    };
+    std.debug.print("Successfully wrote {d} bytes.\n", .{byte_written});
 }
 // to check if you actually write to the file, you can either,
 // 1. open the file in your text editor, or
